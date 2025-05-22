@@ -39,8 +39,6 @@ public class DBContext : DbContext
             .HasOne(b => b.Page)
             .WithMany(p => p.Blocks)
             .HasForeignKey(b => b.PageId);
-
-
     }
 
 }
