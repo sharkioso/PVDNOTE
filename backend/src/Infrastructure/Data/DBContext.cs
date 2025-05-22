@@ -32,9 +32,15 @@ public class DBContext : DbContext
 
         modelBuilder.Entity<Page>()
             .HasOne(p => p.WorkSpace)
-            .WithMany(p => p.Pages)
+            .WithMany(w => w.Pages)
             .HasForeignKey(p => p.WorkSpaceId);
-        
+
+        modelBuilder.Entity<Block>()
+            .HasOne(b => b.Page)
+            .WithMany(p => p.Blocks)
+            .HasForeignKey(b => b.PageId);
+
+
     }
 
 }
