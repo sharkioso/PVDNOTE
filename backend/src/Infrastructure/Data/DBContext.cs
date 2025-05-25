@@ -16,6 +16,10 @@ public class DBContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<User>()
+            .Property(u => u.Id)
+            .ValueGeneratedOnAdd();
+
         modelBuilder.Entity<UserWorkSpace>()
             .HasKey(uw => new { uw.UserId, uw.WorkSpaceId });
 
