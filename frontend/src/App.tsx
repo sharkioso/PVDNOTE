@@ -1,27 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Auth from './pages/Auth';
 import Dashboard from './pages/Dashboard';
 import Canvas from './pages/Canvas';
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userId, setUserId] = useState<number | null>(null);
 
-  const handleLogin = () => {
-    setIsAuthenticated(true);
+  useEffect(() => {
+    const storedUserId = localStorage.getItem('userId');
+    if (storedUserId) {
+      setUserId(parseInt(storedUserId));
+    }
+  }, []);
+
+  const handleLogin = (id: number) => {
+    setUserId(id);
+    localStorage.setItem('userId', id.toString());
   };
 
-  if (!isAuthenticated) {
-    return <Auth onLogin={handleLogin} />;
-  }
+  const handleLogout = () => {
+    setUserId(null);
+    localStorage.removeItem('userId');
+  };
 
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/canvas/:id" element={<Canvas />} />
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
-      </Routes>
+      {userId ? (
+        <Routes>
+          <Route 
+            path="/dashboard" 
+            element={<Dashboard userId={userId} onLogout={handleLogout} />} 
+          />
+          <Route path="/canvas/:id" element={<Canvas />} />
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        </Routes>
+      ) : (
+        <Auth onLogin={handleLogin} />
+      )}
     </BrowserRouter>
   );
 }

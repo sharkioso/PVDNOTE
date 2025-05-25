@@ -5,9 +5,12 @@ import Avatar from './Avatar';
 
 interface HeaderProps {
   onMenuClick: () => void;
+  userId?: number;
 }
 
-const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
+const Header: React.FC<HeaderProps> = ({ onMenuClick, userId }) => {
+  const userInitials = userId ? `U${userId}` : 'GU';
+
   return (
     <header className="sticky top-0 z-10 bg-white border-b border-gray-200">
       <div className="flex items-center justify-between px-4 py-3">
@@ -26,7 +29,7 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
           <button className="p-2 rounded-md hover:bg-gray-100 md:hidden">
             <Search size={20} />
           </button>
-          <Avatar initials="JD" size="sm" />
+          <Avatar initials={userInitials} size="sm" />
         </div>
       </div>
     </header>

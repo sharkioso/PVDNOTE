@@ -1,116 +1,67 @@
 import React, { useState } from 'react';
-import { BookOpen } from 'lucide-react';
+import { authService } from '../services/authService';
 import Input from '../components/Input';
 import Button from '../components/Button';
 
 interface AuthProps {
-  onLogin: () => void;
+  onLogin: (userId: number) => void; // Передаём ID пользователя
 }
 
 const Auth: React.FC<AuthProps> = ({ onLogin }) => {
   const [isLogin, setIsLogin] = useState(true);
-  const [email, setEmail] = useState('');
+  const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
+  const [error, setError] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onLogin();
+    setError('');
+
+    try {
+      const userId = isLogin
+        ? await authService.login(login, password)
+        : await authService.register(login, password);
+
+      onLogin(userId); // Передаём ID в родительский компонент
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Ошибка авторизации');
+    }
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center bg-gray-50 p-4">
-      <div className="w-full max-w-md">
-        <div className="mb-8 text-center">
-          <div className="w-12 h-12 bg-black rounded-lg flex items-center justify-center mx-auto mb-4">
-            <BookOpen size={24} className="text-white" />
-          </div>
-          <h1 className="text-3xl font-bold">PVD Note</h1>
-          <p className="text-gray-600 mt-2">Рабочее пространство для ваших заметок и задач</p>
-        </div>
+    <div className="auth-container">
+      <form onSubmit={handleSubmit}>
+        <h2>{isLogin ? 'Вход' : 'Регистрация'}</h2>
+        
+        {error && <div className="error-message">{error}</div>}
 
-        <div className="bg-white p-8 shadow-sm rounded-lg">
-          <div className="mb-6">
-            <h2 className="text-2xl font-bold text-center">
-              {isLogin ? 'Вход в аккаунт' : 'Создание аккаунта'}
-            </h2>
-          </div>
+        <Input
+          label="Логин"
+          value={login}
+          onChange={(e) => setLogin(e.target.value)}
+          required
+        />
 
-          <form onSubmit={handleSubmit}>
-            {!isLogin && (
-              <Input
-                label="Полное имя"
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Иван Петров"
-                required
-                fullWidth
-              />
-            )}
+        <Input
+          label="Пароль"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
 
-            <Input
-              label="Email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
-              required
-              fullWidth
-            />
+        <Button type="submit">
+          {isLogin ? 'Войти' : 'Зарегистрироваться'}
+        </Button>
 
-            <Input
-              label="Пароль"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              required
-              fullWidth
-            />
-
-            <Button
-              type="button"
-              onClick={() => {
-                const clientId = "ваш_client_id_из_яндекса";
-                const redirectUri = encodeURIComponent("http://localhost:3000/auth/yandex/callback");
-                const authUrl = `https://oauth.yandex.ru/authorize?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}`;
-                window.location.href = authUrl;
-              }}
-              variant="outline"
-              fullWidth
-              className="mt-4 flex items-center justify-center gap-2 bg-[#FFCC00] hover:bg-[#FFD633] text-black"
-            >
-              <img
-                src="https://yastatic.net/s3/passport-static/core/bundles/1.182.0/4x/logo_ru.png"
-                alt="Яндекс"
-                className="w-5 h-5"
-              />
-              Войти через Яндекс
-            </Button>
-
-            <Button
-              type="submit"
-              variant="primary"
-              fullWidth
-              className="mt-6"
-            >
-              {isLogin ? 'Войти' : 'Создать аккаунт'}
-            </Button>
-          </form>
-
-          <div className="mt-6 text-center">
-            <button
-              className="text-sm text-gray-600 hover:text-black"
-              onClick={() => setIsLogin(!isLogin)}
-            >
-              {isLogin
-                ? "Нет аккаунта? Зарегистрируйтесь"
-                : 'Уже есть аккаунт? Войти'}
-            </button>
-          </div>
-        </div>
-      </div>
+        <button 
+          type="button" 
+          onClick={() => setIsLogin(!isLogin)}
+          className="toggle-mode"
+        >
+          {isLogin ? 'Нет аккаунта? Зарегистрироваться' : 'Уже есть аккаунт? Войти'}
+        </button>
+      </form>
     </div>
   );
 };

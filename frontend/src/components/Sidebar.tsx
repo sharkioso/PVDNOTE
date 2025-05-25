@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, Plus, Settings, User, BookOpen, Bookmark, Search, Menu, X } from 'lucide-react';
+import { Home, Plus, Settings, BookOpen, Bookmark, X } from 'lucide-react';
 import Button from './Button';
 import Avatar from './Avatar';
 
@@ -7,9 +7,17 @@ interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
   onCreateCanvas: () => void;
+  onLogout: () => void;
+  userId?: number;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onCreateCanvas }) => {
+const Sidebar: React.FC<SidebarProps> = ({ 
+  isOpen, 
+  onClose, 
+  onCreateCanvas,
+  onLogout,
+  userId 
+}) => {
   const navItems = [
     { icon: <Home size={18} />, label: 'Главная', href: '#' },
     { icon: <BookOpen size={18} />, label: 'Документы', href: '#' },
@@ -38,10 +46,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onCreateCanvas }) =>
               </div>
               <h1 className="text-xl font-bold">PVD Note</h1>
             </div>
-            <button
-              className="md:hidden"
-              onClick={onClose}
-            >
+            <button className="md:hidden" onClick={onClose}>
               <X size={18} />
             </button>
           </div>
@@ -74,10 +79,19 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onCreateCanvas }) =>
 
           <div className="mt-auto pt-4 border-t border-gray-200">
             <div className="flex items-center p-2">
-              <Avatar size="sm" initials="ИП" />
+              <Avatar size="sm" initials={userId ? `U${userId}` : "AN"} />
               <div className="ml-2">
-                <p className="text-sm font-medium">Иван Петров</p>
-                <p className="text-xs text-gray-500">ivan@example.com</p>
+                <p className="text-sm font-medium">
+                  {userId ? `User #${userId}` : "Гость"}
+                </p>
+                {userId && (
+                  <button 
+                    onClick={onLogout}
+                    className="text-xs text-red-500 hover:text-red-700"
+                  >
+                    Выйти
+                  </button>
+                )}
               </div>
             </div>
           </div>
