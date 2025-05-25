@@ -20,7 +20,7 @@ TestResults/
 
 **/Migrations/*.Designer.cs
 **/Migrations/*.resx
-!**/Migrations/*.cs  # Разрешаем только файлы с кодом миграций
+!**/Migrations/*.cs  
 
 
 appsettings.Development.json
