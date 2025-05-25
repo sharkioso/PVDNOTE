@@ -48,7 +48,7 @@ const Auth: React.FC<AuthProps> = ({ onLogin }) => {
                 fullWidth
               />
             )}
-            
+
             <Input
               label="Email"
               type="email"
@@ -58,7 +58,7 @@ const Auth: React.FC<AuthProps> = ({ onLogin }) => {
               required
               fullWidth
             />
-            
+
             <Input
               label="Пароль"
               type="password"
@@ -68,6 +68,26 @@ const Auth: React.FC<AuthProps> = ({ onLogin }) => {
               required
               fullWidth
             />
+
+            <Button
+              type="button"
+              onClick={() => {
+                const clientId = "ваш_client_id_из_яндекса";
+                const redirectUri = encodeURIComponent("http://localhost:3000/auth/yandex/callback");
+                const authUrl = `https://oauth.yandex.ru/authorize?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}`;
+                window.location.href = authUrl;
+              }}
+              variant="outline"
+              fullWidth
+              className="mt-4 flex items-center justify-center gap-2 bg-[#FFCC00] hover:bg-[#FFD633] text-black"
+            >
+              <img
+                src="https://yastatic.net/s3/passport-static/core/bundles/1.182.0/4x/logo_ru.png"
+                alt="Яндекс"
+                className="w-5 h-5"
+              />
+              Войти через Яндекс
+            </Button>
 
             <Button
               type="submit"
