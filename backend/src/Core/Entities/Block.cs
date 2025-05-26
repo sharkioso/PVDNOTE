@@ -7,8 +7,10 @@ public class Block
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
     public int PageId { get; set; }
-    public string Context { get; set; }
+    public string Content { get; set; }
     public string Access { get; set; }
+    public string Type { get; set; }
+    public int Order{ get; set; }
 
-    public Page Page{ get; set; }
+    public Pages Page { get; set; }
 }

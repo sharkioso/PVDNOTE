@@ -8,6 +8,6 @@ public class WorkSpace
     public int ID { get; set; }
     public string Name{ get; set; }
     public List<UserWorkSpace> UserWorkSpaces { get; set; }
-    public List<Page> Pages { get; set; }
+    public List<Pages> Pages { get; set; }
     
 }
