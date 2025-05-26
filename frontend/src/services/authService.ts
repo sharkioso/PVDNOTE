@@ -32,7 +32,6 @@ export const authService = {
   },
 
   async logout(): Promise<void> {
-    // В реальном проекте здесь был бы запрос на бекенд
     return Promise.resolve();
   }
 };
