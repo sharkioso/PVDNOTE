@@ -1,6 +1,5 @@
-// src/components/WorkspaceList.tsx
 import React, { useEffect, useState } from 'react';
-import Button from './Button'; // Измененный импорт
+import { useNavigate } from 'react-router-dom';
 import { Plus } from 'lucide-react';
 
 interface Workspace {
@@ -17,6 +16,7 @@ export const WorkspaceList: React.FC<WorkspaceListProps> = ({ userId }) => {
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
   const [isCreating, setIsCreating] = useState(false);
   const [newWorkspaceName, setNewWorkspaceName] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     loadWorkspaces();
@@ -53,8 +53,12 @@ export const WorkspaceList: React.FC<WorkspaceListProps> = ({ userId }) => {
     }
   };
 
+  const handleWorkspaceClick = (workspaceId: number) => {
+    navigate(`/workspace/${workspaceId}`); 
+  };
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 p-6">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-bold">Мои рабочие пространства</h2>
         <button 
@@ -94,7 +98,11 @@ export const WorkspaceList: React.FC<WorkspaceListProps> = ({ userId }) => {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {workspaces.map((workspace) => (
-          <div key={workspace.id} className="p-4 border rounded-lg hover:shadow-md transition-shadow">
+          <div 
+            key={workspace.id} 
+            className="p-4 border rounded-lg hover:shadow-md transition-shadow cursor-pointer"
+            onClick={() => handleWorkspaceClick(workspace.id)} // Используем новый обработчик
+          >
             <h3 className="font-medium">{workspace.name}</h3>
             <p className="text-sm text-gray-500 mt-1">
               Доступ: {workspace.accessLevel}

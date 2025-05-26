@@ -38,6 +38,8 @@ public class WorkSpaceController : ControllerBase
         return Ok(new { workspace.ID });
     }
 
+
+
     [HttpGet("user/{userId}")]
     public async Task<IActionResult> GetUserWorkspaces(int userId)
     {
@@ -54,5 +56,26 @@ public class WorkSpaceController : ControllerBase
             .ToListAsync();
 
         return Ok(workspaces);
+    }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetWorkspace(int id)
+    {
+        var workspace = await context.WorkSpaces
+            .Include(w => w.Pages)
+            .FirstOrDefaultAsync(w => w.ID == id);
+
+        if (workspace == null) return NotFound();
+
+        return Ok(new
+        {
+            workspace.ID,
+            workspace.Name,
+            Pages = workspace.Pages.Select(p => new
+            {
+                p.Id,
+                p.Title
+            })
+        });
     }
 }

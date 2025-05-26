@@ -9,7 +9,7 @@ public class DBContext : DbContext
     public DbSet<User> Users { get; set; }
     public DbSet<WorkSpace> WorkSpaces { get; set; }
     public DbSet<UserWorkSpace> UserWorkSpaces { get; set; }
-    public DbSet<Page> Pages { get; set; }
+    public DbSet<Pages> Pages { get; set; }
     public DbSet<Block> Blocks { get; set; }
 
     public DBContext(DbContextOptions<DBContext> options) : base(options) { }
@@ -34,7 +34,7 @@ public class DBContext : DbContext
             .HasForeignKey(uw => uw.WorkSpaceId);
 
 
-        modelBuilder.Entity<Page>()
+        modelBuilder.Entity<Pages>()
             .HasOne(p => p.WorkSpace)
             .WithMany(w => w.Pages)
             .HasForeignKey(p => p.WorkSpaceId);

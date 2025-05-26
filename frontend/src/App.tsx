@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Auth from './pages/Auth';
 import Dashboard from './pages/Dashboard';
 import Canvas from './pages/Canvas';
+import WorkspacePagesView from './components/WorkspacePagesView';
 
 function App() {
   const [userId, setUserId] = useState<number | null>(null);
@@ -33,6 +34,7 @@ function App() {
             element={<Dashboard userId={userId} onLogout={handleLogout} />} 
           />
           <Route path="/canvas/:id" element={<Canvas />} />
+          <Route path="/workspace/:id" element={<WorkspacePagesView />} /> {/* Добавленный роут */}
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       ) : (
