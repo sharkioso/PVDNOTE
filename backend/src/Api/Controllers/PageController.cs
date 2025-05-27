@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using PVDNOTE.Backend.Infrastructure.Data;
 using PVDNOTE.Backend.Core.Entities;
 
+
+// бизнес логику надо чуть позже вынести из контроллеров
 [ApiController]
 [Route("api/[controller]")]
 public class PageController : ControllerBase

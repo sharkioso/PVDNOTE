@@ -4,7 +4,7 @@ using PVDNOTE.Backend.Api.DTO;
 using PVDNOTE.Backend.Core.Entities;
 using PVDNOTE.Backend.Infrastructure.Data;
 
-
+// бизнес логику надо чуть позже вынести из контроллеров
 [ApiController]
 [Route("api/[controller]")]
 public class AuthController : ControllerBase
