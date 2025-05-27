@@ -20,7 +20,7 @@ const Auth: React.FC<AuthProps> = ({ onLogin }) => {
     setIsLoading(true);
 
     try {
-      // Валидация полей
+
       if (!login.trim() || !password.trim()) {
         throw new Error('Заполните все поля');
       }
@@ -39,12 +39,12 @@ const Auth: React.FC<AuthProps> = ({ onLogin }) => {
 
       const data = await response.json();
       
-      // Проверяем наличие userId в ответе
+
       if (!data.userId) {
         throw new Error('Не получили ID пользователя');
       }
 
-      // Сохраняем и перенаправляем
+
       localStorage.setItem('userId', data.userId.toString());
       onLogin(data.userId);
       navigate('/dashboard');
