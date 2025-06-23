@@ -20,7 +20,7 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> Register([FromBody] UserRegisterDto dto)
     {
         if (await context.Users.AnyAsync(u => u.Login == dto.Login))
-            return BadRequest(new { message = "Email уже зарегистрирован " });
+            return BadRequest(new { message = "Email уже зарегистрирован" });
 
         var user = new User
         {
