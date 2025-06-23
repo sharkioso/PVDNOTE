@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PVDNOTE.Backend.Core.Entities;
-using PVDNOTE.Backend.DTO;
+using PVDNOTE.Backend.Api.DTO;
 using PVDNOTE.Backend.Infrastructure.Data;
 
 [ApiController]
@@ -15,31 +15,16 @@ public class BlockController : ControllerBase
         this.context = context;
     }
 
-    // [HttpGet("{id}")]
-    // public async Task<IActionResult> GetBlocks(int id)
-    // {
-    //     var block = await context.Blocks
-    //         .Include(b => b.Content)
-    //         .FirstOrDefaultAsync(b => b.Id == id);
-
-    //     if (block == null) return NotFound();
-
-    //     return Ok(new
-    //     {
-    //         block.Id,
-    //         block.
-    //     })       
-
-    // }
 
     [HttpPost("create")]
     public async Task<IActionResult> CreateBlock([FromBody] CreateBlockDTO dto)
     {
+        
+Console.WriteLine($"Updating block {dto.Type}: Content='{dto.Content}'");
         var block = new Block
         {
             Content = dto.Content,
             Type = dto.Type,
-            Order = dto.Order,
             PageId = dto.PageId
         };
 
@@ -52,6 +37,8 @@ public class BlockController : ControllerBase
     [HttpPut("update")]
     public async Task<IActionResult> UpdateBlock([FromBody] UpdateBlockDTO dto)
     {
+        
+Console.WriteLine($"Updating block {dto.Id}: Content='{dto.Content}'");
         var block = await context.Blocks.FindAsync(dto.Id);
         if (block == null) return NotFound();
 

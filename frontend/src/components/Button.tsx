@@ -1,45 +1,23 @@
 import React from 'react';
-
-type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost';
-type ButtonSize = 'sm' | 'md' | 'lg';
+import { LucideIcon } from 'lucide-react';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: ButtonVariant;
-  size?: ButtonSize;
-  fullWidth?: boolean;
   children: React.ReactNode;
+  icon?: LucideIcon;
 }
 
-const Button: React.FC<ButtonProps> = ({
-  variant = 'primary',
-  size = 'md',
-  fullWidth = false,
-  children,
+const Button: React.FC<ButtonProps> = ({ 
+  children, 
   className = '',
-  ...props
+  icon: Icon,
+  ...props 
 }) => {
-  const baseStyles = 'inline-flex items-center justify-center rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none';
-  
-  const variantStyles = {
-    primary: 'bg-black text-white hover:bg-gray-800 focus-visible:ring-gray-900',
-    secondary: 'bg-gray-100 text-gray-900 hover:bg-gray-200 focus-visible:ring-gray-300',
-    outline: 'border border-gray-200 bg-transparent hover:bg-gray-100 focus-visible:ring-gray-300',
-    ghost: 'bg-transparent hover:bg-gray-100 focus-visible:ring-gray-300',
-  };
-  
-  const sizeStyles = {
-    sm: 'h-9 px-3 text-xs',
-    md: 'h-10 py-2 px-4',
-    lg: 'h-11 px-8',
-  };
-  
-  const widthStyles = fullWidth ? 'w-full' : '';
-  
   return (
     <button
-      className={`${baseStyles} ${variantStyles[variant]} ${sizeStyles[size]} ${widthStyles} ${className}`}
+      className={`flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors ${className}`}
       {...props}
     >
+      {Icon && <Icon className="mr-2" size={16} />}
       {children}
     </button>
   );

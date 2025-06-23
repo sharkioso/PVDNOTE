@@ -1,112 +1,158 @@
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { ArrowLeft, Plus, Loader2 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import Button from '../components/Button'; // Измененный импорт
+import { ExportButton } from '../components/ExportButton';
 
 interface Block {
   id: number;
   content: string;
   type: string;
   order: number;
+  pageId: number;
+}
+
+interface PageData {
+  id: number;
+  title: string;
+  blocks: Block[];
 }
 
 export const PageEditor: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
-  const [page, setPage] = useState<{
-    id: number;
-    title: string;
-    blocks: Block[];
-  } | null>(null);
+  const { id: pageId } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const [pageData, setPageData] = useState<PageData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    loadPage();
-  }, [id]);
-
-  const loadPage = async () => {
+  const loadPageData = async () => {
     try {
-      const response = await fetch(`http://localhost:5248/api/Page/${id}`);
-      if (!response.ok) throw new Error('Failed to fetch page');
-      const data = await response.json();
-      setPage(data);
+      setIsLoading(true);
+      const response = await fetch(`http://localhost:5248/api/page/${pageId}`);
+      if (!response.ok) throw new Error('Ошибка загрузки');
+      const data: PageData = await response.json();
+      setPageData(data);
     } catch (error) {
-      console.error('Error loading page:', error);
+      console.error('Ошибка:', error);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleBlockChange = async (blockId: number, newContent: string) => {
+  const handleCreateBlock = async () => {
+    if (!pageData) return;
+    
     try {
-      await fetch('http://localhost:5248/api/Page/block/update', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          Id: blockId,
-          Content: newContent
-        }),
-      });
-    } catch (error) {
-      console.error('Error updating block:', error);
-    }
-  };
-
-  const addNewBlock = async () => {
-    try {
-      const response = await fetch('http://localhost:5248/api/Page/block/create', {
+      const response = await fetch('http://localhost:5248/api/block/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          Content: '',
-          Type: 'text',
-          Order: page?.blocks.length || 0,
-          PageId: id
+          content: 'Новый блок',
+          type: 'text',
+          order: pageData.blocks.length,
+          pageId: Number(pageId),
         }),
       });
-      
-      if (response.ok) {
-        await loadPage();
-      }
+
+      if (!response.ok) throw new Error('Ошибка создания блока');
+      const newBlock = await response.json();
+
+      setPageData({
+        ...pageData,
+        blocks: [...pageData.blocks, newBlock]
+      });
     } catch (error) {
-      console.error('Error adding block:', error);
+      console.error('Ошибка:', error);
     }
   };
 
-  if (isLoading) return <div className="p-6">Loading...</div>;
-  if (!page) return <div className="p-6">Page not found</div>;
+  const handleUpdateBlock = async (blockId: number, content: string) => {
+    if (!pageData) return;
+
+    try {
+      const response = await fetch('http://localhost:5248/api/block/update', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ Id: blockId, Content: content }),
+      });
+
+      if (!response.ok) throw new Error('Ошибка обновления блока');
+
+      setPageData({
+        ...pageData,
+        blocks: pageData.blocks.map(b => 
+          b.id === blockId ? { ...b, content } : b
+        )
+      });
+    } catch (error) {
+      console.error('Ошибка:', error);
+    }
+  };
+
+  useEffect(() => {
+    loadPageData();
+  }, [pageId]);
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Loader2 className="animate-spin h-12 w-12 text-blue-500" />
+      </div>
+    );
+  }
+
+  if (!pageData) {
+    return <div className="p-4">Страница не найдена</div>;
+  }
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
-      <h1 className="text-3xl font-bold mb-8">{page.title}</h1>
-      
-      <div className="space-y-4">
-        {page.blocks.map((block) => (
-          <div key={block.id} className="group">
-            {block.type === 'text' && (
-              <textarea
-                className="w-full p-4 border rounded-lg min-h-[100px] focus:outline-none focus:ring-2 focus:ring-blue-200 resize-none"
-                value={block.content}
-                onChange={(e) => {
-                  const newContent = e.target.value;
-                  setPage(prev => ({
-                    ...prev!,
-                    blocks: prev!.blocks.map(b => 
-                      b.id === block.id ? { ...b, content: newContent } : b
-                    )
-                  }));
-                  handleBlockChange(block.id, newContent);
-                }}
-                placeholder="Начните писать..."
-              />
-            )}
+    <div className="min-h-screen bg-gray-50">
+      <header className="bg-white border-b sticky top-0 z-10">
+        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+          <button 
+            onClick={() => navigate(-1)}
+            className="flex items-center text-gray-600 hover:text-gray-900"
+          >
+            <ArrowLeft size={20} className="mr-2" />
+            Назад
+          </button>
+          
+          <div className="flex items-center gap-4">
+            <ExportButton />
+            <Button
+              onClick={handleCreateBlock}
+              className="flex items-center gap-2"
+            >
+              <Plus size={16} className="mr-2" />
+              Добавить блок
+            </Button>
           </div>
-        ))}
-      </div>
+        </div>
+      </header>
 
-      <button
-        onClick={addNewBlock}
-        className="mt-6 px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200"
-      >
-        + Добавить блок
-      </button>
+      <main className="container mx-auto p-4 max-w-3xl">
+        <div className="space-y-4">
+          <AnimatePresence>
+            {pageData.blocks
+              .sort((a, b) => a.order - b.order)
+              .map(block => (
+                <motion.div
+                  key={block.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="bg-white p-4 rounded-lg shadow border"
+                >
+                  <textarea
+                    className="w-full p-3 focus:outline-none resize-none min-h-[100px]"
+                    value={block.content}
+                    onChange={(e) => handleUpdateBlock(block.id, e.target.value)}
+                    placeholder="Начните писать..."
+                  />
+                </motion.div>
+              ))}
+          </AnimatePresence>
+        </div>
+      </main>
     </div>
   );
 };

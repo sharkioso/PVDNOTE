@@ -19,6 +19,7 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddControllers();
+builder.Services.AddScoped<IExportService, PdfExportService>();
 
 var app = builder.Build();
 
