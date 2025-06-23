@@ -52,9 +52,6 @@ public class PdfExportService : IExportService
             {
                 page.Size(PageSizes.A4);
                 page.Margin(2, Unit.Centimetre);
-                page.DefaultTextStyle(TextStyle.Default
-                .FontFamily("Roboto")
-                .FontSize(12));
                 page.Content()
                     .Column(column =>
                     {

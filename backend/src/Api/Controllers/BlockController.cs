@@ -20,7 +20,6 @@ public class BlockController : ControllerBase
     public async Task<IActionResult> CreateBlock([FromBody] CreateBlockDTO dto)
     {
         
-Console.WriteLine($"Updating block {dto.Type}: Content='{dto.Content}'");
         var block = new Block
         {
             Content = dto.Content,
