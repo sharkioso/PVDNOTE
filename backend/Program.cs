@@ -18,12 +18,12 @@ builder.Services.AddCors(options =>
     });
 });
 
-// Добавляем контроллеры
 builder.Services.AddControllers();
+builder.Services.AddScoped<IExportService, PdfExportService>();
 
 var app = builder.Build();
 
-// Автоматические миграции при запуске
+
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<DBContext>();
@@ -33,7 +33,7 @@ using (var scope = app.Services.CreateScope())
 
 
 app.UseCors("AllowFrontend");
-app.MapControllers(); // Для работы AuthController и других
+app.MapControllers();
 
 app.MapGet("/", () => "Hello World!");
 

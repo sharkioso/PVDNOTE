@@ -28,18 +28,8 @@ public class PageController : ControllerBase
         context.Pages.Add(page);
         await context.SaveChangesAsync();
 
-        var firstBlock = new Block
-        {
-            Content = "",
-            Type = "text",
-            Order = 0,
-            PageId = page.Id
-        };
 
-        context.Blocks.Add(firstBlock);
-        await context.SaveChangesAsync();
-
-        return Ok (new{page.Id});
+        return Ok(new { page.Id });
     }
 
     [HttpGet("{id}")]
@@ -49,20 +39,19 @@ public class PageController : ControllerBase
             .Include(p => p.Blocks)
             .FirstOrDefaultAsync(p => p.Id == id);
 
-
         if (page == null) return NotFound();
 
         return Ok(new
         {
             page.Id,
             page.Title,
-            Block = page.Blocks.OrderBy(b => b.Order).Select(b => new
+            Blocks = page.Blocks.Select(b => new
             {
                 b.Id,
                 b.Content,
                 b.Type,
-                b.Order
-            })
+                b.PageId
+            }).ToList() 
         });
     }
 }

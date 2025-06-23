@@ -6,11 +6,11 @@ namespace PVDNOTE.Backend.Infrastructure.Data;
 
 public class DBContext : DbContext
 {
-    public DbSet<User> Users { get; set; }
-    public DbSet<WorkSpace> WorkSpaces { get; set; }
-    public DbSet<UserWorkSpace> UserWorkSpaces { get; set; }
-    public DbSet<Pages> Pages { get; set; }
-    public DbSet<Block> Blocks { get; set; }
+    public virtual DbSet<User> Users { get; set; }
+    public virtual DbSet<WorkSpace> WorkSpaces { get; set; }
+    public virtual DbSet<UserWorkSpace> UserWorkSpaces { get; set; }
+    public virtual DbSet<Pages> Pages { get; set; }
+    public virtual DbSet<Block> Blocks { get; set; }
 
     public DBContext(DbContextOptions<DBContext> options) : base(options) { }
 

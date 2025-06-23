@@ -8,9 +8,7 @@ public class Block
     public int Id { get; set; }
     public int PageId { get; set; }
     public string Content { get; set; }
-    public string Access { get; set; }
     public string Type { get; set; }
-    public int Order{ get; set; }
 
     public Pages Page { get; set; }
 }

@@ -29,16 +29,9 @@ namespace backend.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Access")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("Content")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<int>("Order")
-                        .HasColumnType("integer");
 
                     b.Property<int>("PageId")
                         .HasColumnType("integer");
@@ -54,7 +47,7 @@ namespace backend.Migrations
                     b.ToTable("Blocks");
                 });
 
-            modelBuilder.Entity("PVDNOTE.Backend.Core.Entities.Page", b =>
+            modelBuilder.Entity("PVDNOTE.Backend.Core.Entities.Pages", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -131,7 +124,7 @@ namespace backend.Migrations
 
             modelBuilder.Entity("PVDNOTE.Backend.Core.Entities.Block", b =>
                 {
-                    b.HasOne("PVDNOTE.Backend.Core.Entities.Page", "Page")
+                    b.HasOne("PVDNOTE.Backend.Core.Entities.Pages", "Page")
                         .WithMany("Blocks")
                         .HasForeignKey("PageId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -140,7 +133,7 @@ namespace backend.Migrations
                     b.Navigation("Page");
                 });
 
-            modelBuilder.Entity("PVDNOTE.Backend.Core.Entities.Page", b =>
+            modelBuilder.Entity("PVDNOTE.Backend.Core.Entities.Pages", b =>
                 {
                     b.HasOne("PVDNOTE.Backend.Core.Entities.WorkSpace", "WorkSpace")
                         .WithMany("Pages")
@@ -170,7 +163,7 @@ namespace backend.Migrations
                     b.Navigation("WorkSpace");
                 });
 
-            modelBuilder.Entity("PVDNOTE.Backend.Core.Entities.Page", b =>
+            modelBuilder.Entity("PVDNOTE.Backend.Core.Entities.Pages", b =>
                 {
                     b.Navigation("Blocks");
                 });
