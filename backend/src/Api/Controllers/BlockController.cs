@@ -9,41 +9,34 @@ using PVDNOTE.Backend.Infrastructure.Data;
 public class BlockController : ControllerBase
 {
     private readonly DBContext context;
+    private readonly BlockService blockService;
 
     public BlockController(DBContext context)
     {
         this.context = context;
+        blockService = new BlockService(context);
     }
 
 
     [HttpPost("create")]
     public async Task<IActionResult> CreateBlock([FromBody] CreateBlockDTO dto)
     {
-        
-        var block = new Block
-        {
-            Content = dto.Content,
-            Type = dto.Type,
-            PageId = dto.PageId
-        };
-
-        context.Blocks.Add(block);
-        await context.SaveChangesAsync();
-
+        var block = await blockService.CreateBlockService(dto);
         return Ok(new { block.Id });
     }
 
     [HttpPut("update")]
     public async Task<IActionResult> UpdateBlock([FromBody] UpdateBlockDTO dto)
     {
+        try
+        {
+            await blockService.UpdateBlockService(dto);
+            return Ok();
+        }
+        catch (ApplicationException)
+        {
+            return NotFound();
+        }
         
-Console.WriteLine($"Updating block {dto.Id}: Content='{dto.Content}'");
-        var block = await context.Blocks.FindAsync(dto.Id);
-        if (block == null) return NotFound();
-
-        block.Content = dto.Content;
-        await context.SaveChangesAsync();
-
-        return Ok();
     }
 }

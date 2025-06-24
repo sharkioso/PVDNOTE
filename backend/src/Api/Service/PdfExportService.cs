@@ -16,35 +16,16 @@ public class PdfExportService : IExportService
     }
 
 
-    public Task<byte[]> GenerateDocumentAsync(string title, Block[] blocks, ExportFormat format)
-    {
-        var document = QuestPDF.Fluent.Document.Create(container =>
-        {
-            container.Page(page =>
-            {
-                page.Size(PageSizes.A4);
-                page.Margin(2, Unit.Centimetre);
-                page.Content()
-                    .Column(column =>
-                    {
-                        column.Item().Text(title).FontSize(20).Bold();
-
-                        foreach (var block in blocks)
-                        {
-                            column.Item().PaddingTop(10).Text(block.Content);
-                        }
-                    });
-            });
-        });
-
-        return Task.FromResult(document.GeneratePdf());
-    }
-
     public async Task<byte[]> GenerateDocument(int padeId, ExportFormat foramt)
     {
         var pageg = await context.Pages
             .Include(p => p.Blocks)
             .FirstOrDefaultAsync(p => p.Id == padeId);
+
+        if (pageg == null)
+        {
+            throw new Exception("Page not found");
+        }
 
         var document = QuestPDF.Fluent.Document.Create(container =>
         {

@@ -11,33 +11,19 @@ using PVDNOTE.Backend.Infrastructure.Data;
 public class WorkSpaceController : ControllerBase
 {
     private readonly DBContext context;
+    private readonly WorkSpaceService workSpaceService;
 
     public WorkSpaceController(DBContext context)
     {
         this.context = context;
+        workSpaceService = new WorkSpaceService(context);
     }
 
 
     [HttpPost("create")]
     public async Task<IActionResult> CreateWorkspace([FromBody] CreateWorkSpaceDTO dto)
     {
-        var workspace = new WorkSpace
-        {
-            Name = dto.Name
-        };
-
-        context.WorkSpaces.Add(workspace);
-        await context.SaveChangesAsync();
-
-        var userWorkSpace = new UserWorkSpace
-        {
-            UserId = dto.UserId,
-            WorkSpaceId = workspace.ID
-        };
-
-        context.UserWorkSpaces.Add(userWorkSpace);
-        await context.SaveChangesAsync();
-
+        var workspace = await workSpaceService.CreateWorkspaceService(dto);
         return Ok(new { workspace.ID });
     }
 
@@ -46,39 +32,31 @@ public class WorkSpaceController : ControllerBase
     [HttpGet("user/{userId}")]
     public async Task<IActionResult> GetUserWorkspaces(int userId)
     {
-        var workspaces = await context.UserWorkSpaces
-            .Where(uw => uw.UserId == userId)
-            .Include(uw => uw.WorkSpace)
-            .Select(uw => new
-            {
-                uw.WorkSpace.ID,
-                uw.WorkSpace.Name,
-                accsessLevel = "owner"
-
-            })
-            .ToListAsync();
-
-        return Ok(workspaces);
+        var workspace = await workSpaceService.GetUserWorkspacesService(userId);
+        return Ok(workspace);
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetWorkspace(int id)
-    {
-        var workspace = await context.WorkSpaces
-            .Include(w => w.Pages)
-            .FirstOrDefaultAsync(w => w.ID == id);
-
-        if (workspace == null) return NotFound();
-
-        return Ok(new
+    {   try
         {
-            workspace.ID,
-            workspace.Name,
-            Pages = workspace.Pages.Select(p => new
+            var workspace = await workSpaceService.GetWorkspaceService(id);
+            return Ok(new
             {
-                p.Id,
-                p.Title
-            })
-        });
+                workspace.ID,
+                workspace.Name,
+                Pages = workspace.Pages.Select(p => new
+                {
+                    p.Id,
+                    p.Title
+                })
+            });
+        }
+        catch (ApplicationException)
+        {
+            return NotFound();
+        }
+
+        
     }
 }

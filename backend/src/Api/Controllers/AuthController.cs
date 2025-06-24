@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using PVDNOTE.Backend.Api.DTO;
 using PVDNOTE.Backend.Core.Entities;
 using PVDNOTE.Backend.Infrastructure.Data;
@@ -10,40 +11,40 @@ using PVDNOTE.Backend.Infrastructure.Data;
 public class AuthController : ControllerBase
 {
     private readonly DBContext context;
+    private readonly AuthService authService;
 
-    public AuthController(DBContext Context)
+    public AuthController(DBContext context)
     {
-        context = Context;
+        this.context = context;
+        authService = new AuthService(context);
     }
 
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] UserRegisterDto dto)
     {
-        if (await context.Users.AnyAsync(u => u.Login == dto.Login))
-            return BadRequest(new { message = "Email уже зарегистрирован " });
-
-        var user = new User
+        try
         {
-            Login = dto.Login,
-            Password = BCrypt.Net.BCrypt.HashPassword(dto.Password)
-        };
-
-        context.Users.Add(user);
-        await context.SaveChangesAsync();
-
-        return Ok(new { user.Id });
+            var user =  await authService.RegisterService(dto);
+            return Ok(new { user.Id });
+        }
+        catch (ApplicationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
     }
 
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] UserLoginDto dto)
     {
-        var user = await context.Users.FirstOrDefaultAsync(u => u.Login == dto.Login);
-        if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.Password))
-            return Unauthorized(new { message = "неверный пароль или email" });
-        return Ok(new
+        try
         {
-            userId = user.Id,
-        });
+            var user = await authService.LoginService(dto);
+            return Ok(new { userId = user.Id });
+        }
+        catch (ApplicationException ex)
+        {
+            return Unauthorized(new { message = ex.Message });
+        }
     }
 
 }

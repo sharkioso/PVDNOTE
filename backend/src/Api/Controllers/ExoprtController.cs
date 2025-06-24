@@ -18,7 +18,14 @@ public class ExportController : ControllerBase
     [HttpGet("pdf/{pageId}")]
     public async Task<IActionResult> ExportToPdf(int pageId)
     {
-        var pdfBytes = await exportService.GenerateDocument(pageId, ExportFormat.Pdf);
-        return File(pdfBytes, "application/pdf", $"page_{pageId}.pdf");
+        try
+        {
+            var pdfBytes = await exportService.GenerateDocument(pageId, ExportFormat.Pdf);
+            return File(pdfBytes, "application/pdf", $"page_{pageId}.pdf");
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 }

@@ -11,22 +11,18 @@ using PVDNOTE.Backend.Core.Entities;
 public class PageController : ControllerBase
 {
     private readonly DBContext context;
+    private readonly PageService pageService;
 
     public PageController(DBContext context)
     {
         this.context = context;
+        pageService = new PageService(context);
     }
 
     [HttpPost("create")]
     public async Task<IActionResult> CreatePage([FromBody] CreatePageDTO dto)
     {
-        var page = new Pages
-        {
-            Title = dto.Title,
-            WorkSpaceId = dto.WorkSpaceId
-        };
-        context.Pages.Add(page);
-        await context.SaveChangesAsync();
+        var page = await pageService.CreatePageService(dto);
 
 
         return Ok(new { page.Id });
@@ -35,9 +31,7 @@ public class PageController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetPage(int id)
     {
-        var page = await context.Pages
-            .Include(p => p.Blocks)
-            .FirstOrDefaultAsync(p => p.Id == id);
+        var page = await pageService.GetPageService(id);
 
         if (page == null) return NotFound();
 
